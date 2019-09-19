@@ -1,0 +1,27 @@
+{
+  "name": "zizooboats-code-challenge-server",
+  "version": "0.0.1",
+  "engines": {
+    "node": "7.7.1",
+    "npm": "4.1.2",
+    "yarn": "0.21.3"
+  },
+  "main": "server.js",
+  "private": false,
+  "dependencies": {
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server.js",
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "client": "node start-client.js",
+    "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
+    "test": "cd client && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^3.1.0"
+  }
+}
