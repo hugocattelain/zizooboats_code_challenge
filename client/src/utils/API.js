@@ -12,7 +12,6 @@ const headers = {
 
 export default {
   fetchBoatList: function(filters) {
-    console.log(process.env.PORT);
     return axios.get(buildUrl(filters), { headers: headers });
   },
 };

@@ -42,7 +42,7 @@ app.get('/api/boats', function(req, res) {
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
-  res.json(filteredList);
+  res.json({ boatList: filteredList, count: boatList.length });
 });
 
 // Serving the unknown routes to index.html

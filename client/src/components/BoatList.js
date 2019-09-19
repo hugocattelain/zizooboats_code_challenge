@@ -23,6 +23,7 @@ const boatType = {
 class BoatList extends React.Component {
   state = {
     boatList: [],
+    count: 0,
     filters: {
       age: null,
       bathrooms: null,
@@ -55,8 +56,9 @@ class BoatList extends React.Component {
     const { filters } = this.state;
     try {
       const response = await API.fetchBoatList(filters);
-      const boatList = await response.data;
-      this.setState({ boatList: boatList });
+      const boatList = await response.data.boatList;
+      const count = await response.data.count;
+      this.setState({ boatList: boatList, count: count });
     } catch (err) {
       console.log(err);
     }
@@ -72,21 +74,18 @@ class BoatList extends React.Component {
     });
   };
 
-  handleChangepage = (event, newPage) => {
+  handleChangepage = newPage => {
     this.setState({ filters: { ...this.state.filters, page: newPage } });
   };
 
   render() {
-    const { boatList } = this.state;
+    const { boatList, count } = this.state;
     const rowsPerPage = this.state.filters.rowsPerPage;
     const page = this.state.filters.page;
 
     return (
       <div>
-        <h1>Boat list : </h1>
-        <div>
-          {rowsPerPage} - {page}
-        </div>
+        <h1>Zizoo Boats code challenge - Hugo Cattelain</h1>
         {boatList && (
           <BoatTable
             boatList={boatList}
@@ -94,6 +93,7 @@ class BoatList extends React.Component {
             handleChangepage={this.handleChangepage}
             page={page}
             rowsPerPage={rowsPerPage}
+            count={count}
             pageLengthOptions={pageLengthOptions}
           />
         )}

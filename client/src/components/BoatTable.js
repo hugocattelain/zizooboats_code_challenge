@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,6 +17,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 function createData(
   id,
@@ -143,7 +145,7 @@ const EnhancedTableToolbar = () => {
     <Toolbar className={clsx(classes.root)}>
       <div className={classes.title}>
         <Typography variant='h6' id='tableTitle'>
-          Nutrition
+          Boats
         </Typography>
       </div>
       <div className={classes.spacer} />
@@ -156,6 +158,62 @@ const EnhancedTableToolbar = () => {
       </div>
     </Toolbar>
   );
+};
+
+function TablePaginationActions(props) {
+  const classes = useToolbarActionsStyles();
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onChangePage } = props;
+
+  function handleBackButtonClick(event) {
+    onChangePage(page - 1);
+  }
+
+  function handleNextButtonClick(event) {
+    onChangePage(page + 1);
+  }
+
+  return (
+    <div className={classes.root}>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label='previous page'
+      >
+        {theme.direction === 'rtl' ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label='next page'
+      >
+        {theme.direction === 'rtl' ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+    </div>
+  );
+}
+
+const useToolbarActionsStyles = makeStyles(theme => ({
+  root: {
+    flexShrink: 0,
+    color: theme.palette.text.secondary,
+    marginLeft: theme.spacing(2.5),
+  },
+}));
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
 };
 
 const useStyles = makeStyles(theme => ({
@@ -180,30 +238,42 @@ const useStyles = makeStyles(theme => ({
 
 export default function EnhancedTable(props) {
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('');
-  const [dense, setDense] = React.useState(false);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('');
+  const [dense, setDense] = useState(false);
+  const [rows, setRows] = useState([]);
   const {
     rowsPerPage,
     page,
     handleChangerowsPerPage,
     handleChangepage,
     pageLengthOptions,
+    count,
+    boatList,
   } = props;
-  const rows = props.boatList.map(boat => {
-    return createData(
-      boat.id,
-      boat.name,
-      boat.type,
-      boat.year,
-      boat.bathrooms,
-      boat.cabins,
-      boat.length,
-      boat.nr_guests,
-      boat.rating,
-      boat.review_rating
-    );
-  });
+
+  useEffect(() => {
+    setRows(createRows(boatList));
+  }, [boatList]);
+
+  function createRows(list) {
+    const rows = list.map(boat => {
+      return createData(
+        boat.id,
+        boat.name,
+        boat.type,
+        boat.year,
+        boat.bathrooms,
+        boat.cabins,
+        boat.length,
+        boat.nr_guests,
+        boat.rating,
+        boat.review_rating
+      );
+    });
+    return rows;
+  }
+
   function handleRequestSort(event, property) {
     const isDesc = orderBy === property && order === 'desc';
     setOrder(isDesc ? 'asc' : 'desc');
@@ -214,8 +284,8 @@ export default function EnhancedTable(props) {
     setDense(event.target.checked);
   }
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - rows.length;
+  /* rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage); */
 
   return (
     <div className={classes.root}>
@@ -234,7 +304,7 @@ export default function EnhancedTable(props) {
             />
             <TableBody>
               {stableSort(rows, getSorting(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                /* .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */
                 .map(row => {
                   return (
                     <TableRow key={row.id}>
@@ -268,6 +338,7 @@ export default function EnhancedTable(props) {
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          count={count}
           backIconButtonProps={{
             'aria-label': 'previous page',
           }}
@@ -276,6 +347,7 @@ export default function EnhancedTable(props) {
           }}
           onChangePage={handleChangepage}
           onChangeRowsPerPage={handleChangerowsPerPage}
+          ActionsComponent={TablePaginationActions}
         />
       </Paper>
       <FormControlLabel
@@ -289,4 +361,8 @@ export default function EnhancedTable(props) {
 EnhancedTable.propTypes = {
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
+  handleChangerowsPerPage: PropTypes.func.isRequired,
+  handleChangepage: PropTypes.func.isRequired,
+  pageLengthOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
+  count: PropTypes.number,
 };
