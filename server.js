@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const boatList = require('./data/boatList.json');
 
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
 //Body Parser
 const urlencodedParser = bodyParser.urlencoded({
@@ -41,4 +41,4 @@ app.get('/api/boats', function(req, res) {
   res.json(filteredList);
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

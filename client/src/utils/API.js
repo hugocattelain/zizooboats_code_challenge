@@ -1,7 +1,6 @@
 const axios = require('axios');
 
-var baseUrl = 'https://zizooboats-code-challenge-hc.herokuapp.com/api/';
-
+var baseUrl = 'https://zizooboats-code-challenge-hc.herokuapp.com/api';
 if (process.env.NODE_ENV === 'development') {
   const PORT = process.env.PORT || 3000;
   baseUrl = 'http://localhost:' + PORT + '/api';
