@@ -53,12 +53,10 @@ class BoatList extends React.Component {
 
   fetchBoatList = async () => {
     const { filters } = this.state;
-    console.log('filters', filters);
     try {
       const response = await API.fetchBoatList(filters);
       const boatList = await response.data;
       this.setState({ boatList: boatList });
-      console.log('fetching', boatList);
     } catch (err) {
       console.log(err);
     }
