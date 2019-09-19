@@ -13,6 +13,9 @@ const urlencodedParser = bodyParser.urlencoded({
 app.use(urlencodedParser);
 app.use(bodyParser.json());
 
+// Express only serves static assets in production
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 //CORS Definition
 app.use(function(req, res, next) {
   res.setHeader(
@@ -39,6 +42,11 @@ app.get('/api/boats', function(req, res) {
     page * rowsPerPage + rowsPerPage
   );
   res.json(filteredList);
+});
+
+// Serving the unknown routes to index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
