@@ -46,8 +46,6 @@ function createData(
   };
 }
 
-const pageLength = [10, 25, 50, 100];
-
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -138,7 +136,7 @@ const useToolbarStyles = makeStyles(theme => ({
   },
 }));
 
-const EnhancedTableToolbar = () => {
+const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
 
   return (
@@ -151,7 +149,7 @@ const EnhancedTableToolbar = () => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         <Tooltip title='Filter list'>
-          <IconButton aria-label='filter list'>
+          <IconButton aria-label='filter list' onClick={props.openDialog}>
             <FilterListIcon />
           </IconButton>
         </Tooltip>
@@ -234,6 +232,12 @@ const useStyles = makeStyles(theme => ({
   capitalize: {
     textTransform: 'capitalize',
   },
+  boatName: {
+    textTransform: 'capitalize',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    color: '#0000EE',
+  },
 }));
 
 export default function EnhancedTable(props) {
@@ -250,6 +254,8 @@ export default function EnhancedTable(props) {
     pageLengthOptions,
     count,
     boatList,
+    openDialog,
+    openDetailsDialog,
   } = props;
 
   useEffect(() => {
@@ -285,12 +291,11 @@ export default function EnhancedTable(props) {
   }
 
   const emptyRows = rowsPerPage - rows.length;
-  /* rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage); */
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar />
+        <EnhancedTableToolbar openDialog={openDialog} />
         <div className={classes.tableWrapper}>
           <Table
             className={classes.table}
@@ -303,30 +308,31 @@ export default function EnhancedTable(props) {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {stableSort(rows, getSorting(order, orderBy))
-                /* .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */
-                .map(row => {
-                  return (
-                    <TableRow key={row.id}>
-                      <TableCell className={classes.capitalize}>
-                        {row.name}
-                      </TableCell>
-                      <TableCell className={classes.capitalize} align='right'>
-                        {row.type}
-                      </TableCell>
-                      <TableCell align='right'>{row.year}</TableCell>
-                      <TableCell align='right'>{row.bathrooms}</TableCell>
-                      <TableCell align='right'>{row.cabins}</TableCell>
-                      <TableCell align='right'>{row.length}</TableCell>
-                      <TableCell align='right'>{row.nr_guests}</TableCell>
-                      <TableCell align='right'>{row.rating}</TableCell>
-                      <TableCell align='right'>{row.review_rating}</TableCell>
-                    </TableRow>
-                  );
-                })}
+              {stableSort(rows, getSorting(order, orderBy)).map(row => {
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell
+                      className={classes.boatName}
+                      onClick={() => openDetailsDialog(row)}
+                    >
+                      {row.name}
+                    </TableCell>
+                    <TableCell className={classes.capitalize} align='right'>
+                      {row.type}
+                    </TableCell>
+                    <TableCell align='right'>{row.year}</TableCell>
+                    <TableCell align='right'>{row.bathrooms}</TableCell>
+                    <TableCell align='right'>{row.cabins}</TableCell>
+                    <TableCell align='right'>{row.length}</TableCell>
+                    <TableCell align='right'>{row.nr_guests}</TableCell>
+                    <TableCell align='right'>{row.rating}</TableCell>
+                    <TableCell align='right'>{row.review_rating}</TableCell>
+                  </TableRow>
+                );
+              })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={9} />
+                  <TableCell colSpan={9}></TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -335,7 +341,6 @@ export default function EnhancedTable(props) {
         <TablePagination
           rowsPerPageOptions={pageLengthOptions}
           component='div'
-          count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           count={count}

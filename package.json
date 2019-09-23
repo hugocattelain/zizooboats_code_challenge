@@ -9,9 +9,12 @@
   "main": "server.js",
   "private": false,
   "dependencies": {
+    "@types/graphql": "^14.5.0",
+    "@types/node": "^12.7.5",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "neo4j-graphql-js": "^2.7.2",
     "path": "^0.12.7"
   },
   "scripts": {
@@ -19,10 +22,11 @@
     "server": "node server.js",
     "heroku-postbuild": "cd client && npm install && npm run build",
     "client": "node start-client.js",
-    "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
+    "dev": "nodemon server.js",
     "test": "cd client && npm test"
   },
   "devDependencies": {
-    "concurrently": "^3.1.0"
+    "concurrently": "^3.1.0",
+    "nodemon": "^1.19.2"
   }
 }
