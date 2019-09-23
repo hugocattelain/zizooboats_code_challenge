@@ -25,11 +25,6 @@ function buildUrl(filters) {
 
   for (let key in filters) {
     if (filters[key] !== null && filters[key] !== '') {
-      console.log(
-        typeof filters[key] == 'object',
-        filters[key].length,
-        filters[key]
-      );
       if (typeof filters[key] == 'object' && filters[key].length < 1) {
         continue;
       }
@@ -44,22 +39,3 @@ function buildUrl(filters) {
 
   return url;
 }
-
-/* function buildUrl2(filters) {
-  let query = '';
-  let isFirstParam = true;
-
-  for (let key in filters) {
-    if (filters[key] !== null) {
-      if (isFirstParam) {
-        query = `${query}"${key}":${filters[key]}`;
-        isFirstParam = false;
-      } else {
-        query = `${query},"${key}":${filters[key]}`;
-      }
-    }
-  }
-
-  console.log(`${baseUrl}/graphql?query=getBoats(${query})`);
-  return `${baseUrl}/graphql?query=query getBoats(${query})`;
-} */
