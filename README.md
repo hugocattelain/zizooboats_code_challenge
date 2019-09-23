@@ -1,6 +1,7 @@
 # Zizoo Boats code challenge
 
 Candidate: Hugo Cattelain
+Live Demo: https://zizooboats-code-challenge-hc.herokuapp.com/
 
 ## Getting started
 
